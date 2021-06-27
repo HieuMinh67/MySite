@@ -12,6 +12,14 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 import os
 from pathlib import Path
+from django.urls import reverse_lazy
+import environ
+
+env = environ.Env(
+    DEBUG=(bool, False)
+)
+environ.Env.read_env()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,12 +31,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-*govj5s19gn0d*0j60+*x#ix!ds0g+4h!wkia^!06eix!ajtyi'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = ['pmhieu.tech', 'localhost', '127.0.0.1']
 
-SOCIAL_AUTH_FACEBOOK_KEY = '526736048337549'  # Facebook App ID
-SOCIAL_AUTH_FACEBOOK_SECRET = '0da09772785d85e52da7bd8fe94b676a'  # Facebook App Secret
+SOCIAL_AUTH_FACEBOOK_KEY = env('SOCIAL_AUTH_FACEBOOK_KEY')  # Facebook App ID
+SOCIAL_AUTH_FACEBOOK_SECRET = env('SOCIAL_AUTH_FACEBOOK_SECRET')  # Facebook App Secret
 
 # Application definition
 
@@ -43,6 +51,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'social_django',
     'django_extensions',
+    'easy_thumbnails',
 ]
 
 MIDDLEWARE = [
@@ -143,3 +152,7 @@ AUTHENTICATION_BACKENDS = [
     'account.authentication.EmailAuthBackend',
     'social_core.backends.facebook.FacebookOAuth2',
 ]
+
+ABSOLUTE_URL_OVERRIDES = {
+    'auth.user': lambda u: reverse_lazy('user_detail', args=[u.username])
+}
